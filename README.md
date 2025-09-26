@@ -62,7 +62,8 @@ A vulnerability with the way game sessions are handled is that anyone can create
 After the game has begun the user can then record for kills they did not make and then position themselves to win the game, since they are the only ones that can change the game state due to having the server key
 
 **Attack Flow:**
-Malicious user creates the session by sending out a transaction manually → Other users are invited or they see the session as open and join → The capacity is reached and the game starts → The user records for kills they did not make → The user wins the game and the earnings are given to the user alone (the current implementation of the distribute for pay spawn games allow for only a single user to claim funds, if that player is the only player with kills and spawns and since of course the malicious user controls the "server" key they can decide who has kills and spawns left by killing as many players as they like), or their team of which the user could setup to make it so that they are the only one, by duplicating themselves across the entire team so all the slots are full but there is only one user → The other players are left with nothing.
+Malicious user → Creates session manually → Other users join → Capacity reached & Game starts → Malicious user records kills themselves alone → Wins game → Funds are distributed to the malicious user alone or their team depending on the type of game.  
+
 
 **Severity:** Very high, if successfully executed it could lead to loss of funds for other players.
 
@@ -78,8 +79,8 @@ Another vulnerability that could be taken advantage of is the fact that even for
 For a game that already exists, with members on one team and waiting for members on the other (e.g. team A has no members yet, but Team B has 2 members and is waiting for 3 more), the user can fill in themselves or some other dummy account for the remaining slots in Team B, and take up all the 5 spots on team A. This would put Team B at a disadvantage, since they would have dummy and unresponsive players.
 The malicious user would be driven by the fact that they would receive their deposits back and also the deposits of other players as well.
 
-**Flow:**
-Valid Game session is created → a number of users Join a Team e.g. team B, but not filling all slots → A Malicious user fills up team B and also fills up Team A → The user wins the game → The funds are sent back to the user's team (which would actually consist just only of the user if the user decided to duplicate themselves with the same or multiple keys) or in a kill to spawn they would get the higher part of the fees if not all.
+**Attack Flow:**
+Valid game session created → A few users join normally → Malicious user repeatedly adds themselves (or dummy accounts/collaborators) into remaining slots on both teams → Other Team fill up with duplicates/dummies → Game starts → Dummy players do not participate, sabotaging one team while the malicious user ensures their team wins → Malicious user (and their duplicates) claim winnings → Honest players lose their funds.
 
 **Severity:** Very high, it is similar to the above vulnerability, if it is successfully executed it would lead to loss of funds for other players
 
@@ -91,7 +92,7 @@ Another fix/feature could be implemented, which would make the gameplay better i
 
 This is less of a vulnerability and may be an intended mechanic, but there is a problem with users who have a large allocation of funds in a pay-to-spawn style game.
 A player with large amount of funds can simply pay their large allocation repeatedly, effectively putting themselves in a position to win by holding the majority share.
-It would be more reasonable to set a limit on how many times a user can spawn. Once their allotted spawns are exhausted, they should no longer be able to spawn again. This would be a more balanced gameplay compared to allowing unlimited spawning.
+It would be more reasonable to set a limit on how many times a user can spawn, either by the creator of the game session or hard coded rules. Once their allotted spawns are exhausted, they should no longer be able to spawn again. This would be a more balanced gameplay compared to allowing unlimited spawning.
 
 #### Other Vulnerabilities
 There are other potential vulnerabilites found in the program, such as overflow/underflow they are listed as improvements in phase 2
