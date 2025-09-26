@@ -105,8 +105,8 @@ There are other potential vulnerabilites found in the program, such as overflow/
 
 The core purpose of the program is to act as an escrow, facilitating the transfer of funds between users. That is essentially all the program is required to do.
 However, the program includes additional logic, primarily checks, to ensure it never enters an inconsistent state that could be exploited (e.g., duplicate users). While these checks could instead be handled by the server—where every instruction would be validated before execution—that approach would make the game fully centralized. To avoid this, some aspects remain server-controlled while others are left open.
-From an optimization perspective, if the program relied entirely on the server, it could be simplified to a minimal escrow implementation. But since certain parts are intentionally left open, these checks are necessary to maintain consistency and prevent issues. 
-These are improvements that could be made to the current implementation, they are specified on a file by file basis, some improvements are repeated so they it could be known for each specific file it applies to.
+From an optimization perspective, if the program relied entirely on the server, it could be simplified to a minimal escrow implementation. But since certain parts are intentionally left open, these addon checks are necessary to maintain consistency and prevent pontential issues.
+These are improvements that could be made to the current implementation, they are specified on a file by file basis for easy review, some improvements are repeated so they it could be known for each specific file it applies to.
 
 ### create_game_session.rs
 
