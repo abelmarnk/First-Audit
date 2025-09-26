@@ -94,7 +94,7 @@ A player with large amount of funds can simply pay their large allocation repeat
 It would be more reasonable to set a limit on how many times a user can spawn. Once their allotted spawns are exhausted, they should no longer be able to spawn again. This would be a more balanced gameplay compared to allowing unlimited spawning.
 
 #### Other Vulnerabilities
-There are other vulnerabilites found in the program, they are not as major as the ones above, but are important as well they are listed as improvements in phase 2
+There are other potential vulnerabilites found in the program, such as overflow/underflow they are listed as improvements in phase 2
 
 ---
 
