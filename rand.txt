@@ -1,0 +1,32 @@
+    // Vault token account should be closed
+    try {
+      await getTokenBalance(provider.connection, vaultTokenAccountKey);
+      assert.fail("Vault token account should be closed");
+    } catch (err) {
+      assert(err instanceof TokenAccountNotFoundError, "Unknown error");
+
+      console.log("Vault token account successfully closed");
+    }
+
+    tests for create game session
+    multiple of 10,
+    Fails to create when the creator is not at the right index
+    Fails to create when not initially sorted
+
+    distribute more winnings
+    fails with invalid arrangement of remainining accounts
+    invalid authority
+    check that the creator gets the additional balance
+
+    join user accounts
+    full
+    duplicate
+    invalid mint
+
+    record kill 
+    invalid index
+
+    
+    refund 
+    fails with invalid arrangement of remainining accounts
+    fails with not enough of remainining accounts
