@@ -1,4 +1,4 @@
-# Prime Skill Studio - Audit Report
+# Prime Skill Game Studio - Audit Report
 
 ## Project Information
 
