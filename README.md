@@ -28,7 +28,7 @@
 Full audit of the supplied Solana smart contract
 
 ### Phase 2
-Full rewrite of the contract implementing the suggested fixes and improvements
+Full rewrite of the contract implementing the suggested fixes and improvements as well as tests for ensuring correctness
 
 ---
 
