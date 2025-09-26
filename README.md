@@ -18,6 +18,7 @@
 - [Phase 2 - Identify Improvements & Implementation](#phase-2---identify-improvements--implementation)
 - [Timeline](#timeline)
 - [Additional Info](#additional-info)
+- [Build Info](#build-info)
 - [Author Info](#author-info)
 
 ---
@@ -28,7 +29,7 @@
 Full audit of the supplied Solana smart contract
 
 ### Phase 2
-Full rewrite of the contract implementing the suggested fixes and improvements as well as tests for ensuring correctness
+Full rewrite of the contract implementing the suggested fixes and improvements as well as tests for the rewritten contract for ensuring correctness
 
 ---
 
@@ -145,8 +146,8 @@ These are improvements that could be made to the current implementation, they ar
 **Problem:** Game session account and the vault token account not closed after the game session  
 **Improvement:** Close the vault account and it's token account and return the lamports back to the server/creator(If we want to store it to the creator then the creator would have to be stored in the session struct and be passed when we call the instruction, which is what is implemented in the improvements), closing would allow for users to be refunded for the fees they pay for creating games, preventing build ups
 
-**Problem:** Not all the tokens may be transferred out of the vault account, this is due to the fact that the the session bet may not be a multiple of 10, if this is case, then based on the current implementation some tokens would still be left over due to truncation.  
-**Improvement:** This problem in some sense cannot be avoided there would always be some truncation if the session bet is not a multiple, one approach we can take is to transfer the remainder of the funds to the highest scorer, but the cleanest approach in my opinion, would be forcing the amount for the session bet when the game session is created to the nearest multiple of 10, preferably it would be the lower multiple so the transaction would not fail due to an insufficient balance(it is possible the transaction fails do to a minor 10 lamports difference), e.g of the creator wanted to make the session bet 575,895 lamports, they would use 575,890 and be debited exactly that amount instead.
+**Problem:** Not all the tokens may be transferred out of the vault account, this is due to the fact that the divisor may not be a multiple of the divident in the calculation, if this is case, then based on the current implementation some tokens would still be left over due to truncation.  
+**Improvement:** This problem in some sense cannot be avoided there would always be some truncation if the dividend is not a multiple of the divisor, one approach we can take is to transfer the remainder of the funds to the highest scorer, or preferably the creator, we can also bring the wager amount to the nearest lowest mutiple of 10 to prevent such cases
 
 **Problem:** In both functions the players which would have their accounts credited are used to transfer out the tokens, in this case we iterate over those accounts and look for their accounts and token accounts in the remaining accounts passed, this check is inefficient and not the best that can be done.  
 **Improvement:** We can improve this by having the server read of the accounts from the chain and pass the account in that order, and we can make a double forward pass verifying and transferring, which would take O(n) time instead of O(n^2).
@@ -201,8 +202,8 @@ These are improvements that could be made to the current implementation, they ar
 **Problem:** Vault account and it's token account not closed after the game session  
 **Improvement:** Close the vault account and it's token account and return the lamports back to the server/creator(If we want to store it to the creator then the creator would have to be stored in the session struct and be passed when we call the instruction)
 
-**Problem:** Not all the tokens may be transferred out of the vault account, this is due to the fact that the the session bet may not be a multiple of 10, if this is case, then based on the current implementation some tokens would still be left over due to truncation.  
-**Improvement:** This problem in some sense cannot be avoided there would always be some truncation if the session bet is not a multiple, one approach we can take is to transfer the remainder of the funds to the highest scorer, but the cleanest approach in my opinion, would be forcing the amount for the session bet when the game session is created to the nearest multiple of 10, preferably it would be the lower multiple so the transaction would not fail due to an insufficient balance(it is possible the transaction fails do to a minor 10 lamports difference)
+**Problem:** Not all the tokens may be transferred out of the vault account, this is due to the fact that the divisor may not be a multiple of the divident in the calculation, if this is case, then based on the current implementation some tokens would still be left over due to truncation.  
+**Improvement:** This problem in some sense cannot be avoided there would always be some truncation if the dividend is not a multiple of the divisor, one approach we can take is to transfer the remainder of the funds to the highest scorer, or preferably the creator, we can also bring the wager amount to the nearest lowest mutiple of 10 to prevent such cases
 
 **Problem:** The user accounts are passed into the instruction are not necessary  
 **Improvement:** The user accounts passed into the instruction can be replaced by the public keys stored in the game session thereby reducing transaction overhead, we can further reduce it by only passing in token accounts that we know are going to be given some winnings
