@@ -564,14 +564,27 @@ describe("Distribute Winnings", () => {
         `Team ${victimTeam.teamA ? 0 : 1} player[${victimIndex}] (${victim.toBase58()}) x${killsCount}`
       );
 
-      await doKills(killerTeam, killerIndex, victimTeam, victimIndex, killsCount, killer, victim);
+      // Though it is very unlikely, there is a chance that an unlucky player gets killed enough times that they
+      // run out of spawns,in this case we catch the error and continue
+      try {
+        await doKills(killerTeam, killerIndex, victimTeam, victimIndex, killsCount, killer, victim);
+      } catch(err){
+        assert(err instanceof anchor.AnchorError, "Unknown error");
+
+        let error = err;
+
+        assert.equal(error.error.errorCode.code, "PlayerHasNoSpawns", "The player was expected to be out of spawns, another error occured")
+      }
     }
 
     // Fetch game session before distribution
     const gameSessionBefore = await program.account.gameSession.fetch(gameSessionKey);
 
+    // Get the player stats for that session(keys and kills & spawns sum)
     const players = extractPlayerStats(gameSessionBefore);
 
+    // Get the earnings for each player, as well as the left over that should go to the
+    // creator
     const { earnings, leftover } = calculateExpectedEarnings(gameSessionBefore, players);    
 
     let pairs = [
@@ -583,10 +596,11 @@ describe("Distribute Winnings", () => {
       { player: user6.publicKey, tokenAccount: user6TokenAccount }
     ];
 
+    // We use the players that still have kills and spawns left to filter out the remaining accounts
     let remainingAccounts = getTokenAccounts(players.map( pair => pair.pubkey), pairs);
 
-     try{// Distribute winnings
-    let txSig = await program.methods
+    // Distribute winnings
+    await program.methods
       .distributePayToSpawnWinnings()
       .accountsPartial({
         globalConfig: globalConfigKey,
@@ -599,13 +613,6 @@ describe("Distribute Winnings", () => {
       .remainingAccounts(remainingAccounts)
       .signers([gameServerKeypair])
       .rpc(confirmOptions);
-
-    const tx = await provider.connection.getTransaction(txSig, {
-      commitment: "confirmed",
-      maxSupportedTransactionVersion: 0
-    });}catch(err){
-      console.log("Error: ", err)
-    }
 
 
     // Save final balances
@@ -622,6 +629,7 @@ describe("Distribute Winnings", () => {
       const expected = earnings[pkStr] ?? 0;
       const delta = finalBalances[`user${i}`] - initialBalances[`user${i}`];
       console.log(`User${i} should have earned ${expected}, got ${delta}`);
+      assert.equal(expected, delta, "The expected earnings are not the same as the calculated");
     }
 
     // Creator = earnings + leftover
