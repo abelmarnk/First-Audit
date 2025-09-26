@@ -1,4 +1,4 @@
-# PrimeSkill Studio - Solana Smart Contract Audit Report
+# Prime Skill Studio - Audit Report
 
 ## Project Information
 
